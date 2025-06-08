@@ -20,7 +20,7 @@ In case of a preemptive shutdown, ErrShutdownTimeout or ErrForcedShutdown will b
 package main
 
 import (
-    "github.com/pedramktb/lifecycle"
+    "github.com/pedramktb/go-lifecycle"
     "time"
     "your-module/database"
     "your-module/cache"
