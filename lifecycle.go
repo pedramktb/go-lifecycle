@@ -42,6 +42,9 @@ type lifecycleData struct {
 //	}
 //	// End of main()
 func ContextFrom(ctx context.Context, shutdownTimeout time.Duration) (context.Context, context.CancelFunc, <-chan error) {
+	if ctx == nil {
+		panic("cannot create context from nil parent")
+	}
 	ctx, cancel := signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM)
 	lc := &lifecycleData{
 		closerGroups: make(map[string][]func(context.Context) error),
