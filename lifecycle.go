@@ -24,7 +24,7 @@ type lifecycleData struct {
 	registerLock sync.RWMutex
 }
 
-// Context returns a context with a lifecycle. The lifecycle holds a map of closing groups.
+// ContextFrom returns a context with a lifecycle. The lifecycle holds a map of closing groups.
 // The lifecycle is used to close all closers to finish before exiting a (sub-)program.
 // The wait is limited to the given timeout or a terminate or an interrupt signal after the initial
 // cancelation. This means closing a running program immediately from shell, requires 2 interrupts.
@@ -41,8 +41,11 @@ type lifecycleData struct {
 //		logger.Error("one or more modules failed to shutdown properly", errors)
 //	}
 //	// End of main()
-func Context(shutdownTimeout time.Duration) (context.Context, context.CancelFunc, <-chan error) {
-	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+func ContextFrom(ctx context.Context, shutdownTimeout time.Duration) (context.Context, context.CancelFunc, <-chan error) {
+	if ctx == nil {
+		panic("cannot create context from nil parent")
+	}
+	ctx, cancel := signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM)
 	lc := &lifecycleData{
 		closerGroups: make(map[string][]func(context.Context) error),
 	}
@@ -76,6 +79,12 @@ func Context(shutdownTimeout time.Duration) (context.Context, context.CancelFunc
 
 	}()
 	return ctx, cancel, shutdownErrs
+}
+
+// Context returns a context with a lifecycle using context.Background as parent.
+// This function is kept for backward compatibility.
+func Context(shutdownTimeout time.Duration) (context.Context, context.CancelFunc, <-chan error) {
+	return ContextFrom(context.Background(), shutdownTimeout)
 }
 
 func runClosers(ctx context.Context, closerGroups map[string][]func(context.Context) error, lock *sync.Mutex, errs chan<- error) {

@@ -1,4 +1,4 @@
-name: Lint and Test
+name: Lint, Test and Build
 
 on:
   workflow_call:
@@ -10,7 +10,7 @@ on:
       - main
 
 jobs:
-  lint-and-test:
+  lint-test-and-build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23,3 +23,4 @@ jobs:
       - run: task deps
       - run: task lint
       - run: task test
+      - run: task build

@@ -20,3 +20,8 @@ tasks:
     desc: Run tests
     cmds:
       - go test ./...
+
+  build:
+    desc: Build to check compilability
+    cmds:
+      - go build ./...
