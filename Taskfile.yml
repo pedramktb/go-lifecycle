@@ -22,6 +22,6 @@ tasks:
       - go test ./...
 
   build:
-    desc: Build to see compilaility
+    desc: Build to check compilability
     cmds:
       - go build ./...
